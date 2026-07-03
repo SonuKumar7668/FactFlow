@@ -29,6 +29,7 @@ app.post("/fackgenerate",async(req,res)=>{
     res.send(facts);
 })
 
-app.listen(4000, () => {
-    console.log("App is listening at 4000");
-})
+// app.listen(4000, () => {
+//     console.log("App is listening at 4000");
+// })
+export default app;
