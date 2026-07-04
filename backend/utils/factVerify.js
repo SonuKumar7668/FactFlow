@@ -8,7 +8,7 @@ export const factVerify = async (input) => {
     const response = await agent.invoke({
         messages: [{ role: "user", content: input }],
     })
-    return response.messages[response.messages.length-1].content;
+    return response.messages[response.messages.length - 1].content;
 }
 
 const systemPrompt = `
@@ -47,13 +47,17 @@ Never return an empty array unless the input array itself is empty.
 
 
 const searchWeb = tool(
-    async ({input}) => { return await webSearch(input); },
+    async ({ queries }) => {
+        return Promise.all(
+            queries.map(query => webSearch(query))
+        );
+    },
     {
-        name: "webSearch",
-        description: "searches the web and return relevent information",
+        name: "searchWeb",
+        description: "Search multiple claims.",
         schema: z.object({
-            input: z.string().describe("The query to be searched")
-        })
+            queries: z.array(z.string()),
+        }),
     }
 )
 
