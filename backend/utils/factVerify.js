@@ -1,4 +1,4 @@
-import { createAgent, tool, providerStrategy } from "langchain";
+import { createAgent, tool } from "langchain";
 import * as z from "zod";
 import { webSearch } from "./webSearch.js";
 import { model } from "./model.js";
@@ -10,20 +10,6 @@ export const factVerify = async (input) => {
     })
     return response.messages[response.messages.length-1].content;
 }
-
-const FactVerificationSchema = z.object({
-    results: z.array(
-        z.object({
-            originalQuery: z.string(),
-            verdict: z.enum([
-                "SUPPORTED",
-                "CONTRADICTED",
-                "INSUFFICIENT_EVIDENCE",
-            ]),
-            reason: z.string(),
-        })
-    ),
-});
 
 const systemPrompt = `
 You are a fact verification assistant.
@@ -48,6 +34,14 @@ Verdict must be one of:
 - SUPPORTED
 - CONTRADICTED
 - INSUFFICIENT_EVIDENCE
+
+You MUST use the searchWeb tool for every claim.
+
+Do not produce a final answer until you have called the searchWeb tool for every claim.
+
+If the tool returns evidence, you MUST produce one verification result for that claim.
+
+Never return an empty array unless the input array itself is empty.
 `;
 
 
@@ -67,5 +61,4 @@ const agent = createAgent({
     model: model,
     tools: [searchWeb],
     systemPrompt,
-    // responseFormat: providerStrategy(FactVerificationSchema)
 })
