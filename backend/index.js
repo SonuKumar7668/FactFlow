@@ -3,30 +3,36 @@ import bodyParser from "body-parser";
 import {factGenerator} from "./utils/factGenerator.js";
 import { webSearch } from "./utils/webSearch.js";
 import { factVerify } from "./utils/factVerify.js";
+import { wrapAsync } from "./utils/wrapAsync.js";
+
 const app = express();
 app.use(bodyParser.json());
 
-app.get("/", async (req, res) => {
-    res.send("Hello");
-})
+app.get("/",wrapAsync( async (req, res) => {
+    res.send("Server is Running!");
+}))
 
-app.post("/verify/fact",async(req,res)=>{
+app.post("/v1/verifyfact", wrapAsync(async(req,res)=>{
     const query= req.body.query;
     const facts=await factGenerator(query);
     const output= await factVerify(facts);
     res.send(output);
-})
+}))
 
-app.post("/webSearch",async(req,res)=>{
+app.post("/test/webSearch",wrapAsync(async(req,res)=>{
     const query= req.body.query;
     const results = await webSearch(query);
     res.send(results);
-})
+}))
 
-app.post("/fackgenerate",async(req,res)=>{
+app.post("/test/factgenerate",wrapAsync(async(req,res)=>{
     const sentence = req.body.sentence;
     const facts=await factGenerator(sentence);
     res.send(facts);
+}))
+
+app.use((req,res)=>{
+    res.status(404).json({"error":"Page not found"});
 })
 
 app.listen(4000, () => {

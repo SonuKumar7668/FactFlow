@@ -35,7 +35,7 @@ Output:
         model: model,
         systemPrompt: FactGeneratorPrompt
     })
-
+    
     const facts = await factAgent.invoke({
         messages: [{ role: "user", content: input }],
     });

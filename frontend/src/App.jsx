@@ -4,8 +4,27 @@ import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
 
+
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
+  
+const [response,setResponse]=useState([
+  {
+    "claim": "OpenAI released ChatGPT in November 2022.",
+    "verdict": "INSUFFICIENT_EVIDENCE",
+    "reason": "Could not find a reliable source confirming the release date of ChatGPT."
+  },
+  {
+    "claim": "ChatGPT reached one million users within five days.",
+    "verdict": "INSUFFICIENT_EVIDENCE",
+    "reason": "No trustworthy sources were found to confirm this claim."
+  },
+  {
+    "claim": "OpenAI introduced GPT-4 in 2023.",
+    "verdict": "SUPPORTED",
+    "reason": "Multiple reliable sources indicate that OpenAI released GPT-4 in 2022, not 2023."
+  }
+]);
 
   return (
     <>
