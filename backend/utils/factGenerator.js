@@ -2,42 +2,34 @@ import { createAgent } from "langchain";
 import { model } from "./model.js";
 import { client } from "./langsmithTool.js";
 
-export const factGenerator = async (input) => {
-    const FactGeneratorPrompt = `
+export const factGenerator = async(input)=>{
+const FactGeneratorPrompt = `
 You are an AI assistant that extracts atomic factual statements from an input sentence.
 
 Rules:
-1. Split the input into the smallest independent factual statements possible.
-2. Do NOT verify whether the facts are true or false.
-3. Do NOT add, remove, or infer information that is not explicitly stated.
-4. Return ONLY a valid JSON array of strings.
-5. Never return explanations, markdown, or any text outside the JSON array.
-6. If the sentence contains only one fact, return an array with a single element.
-7. In case of no fact detected, return an empty array.
-8. Each output sentence must contain exactly one independent fact.
-9. If a sentence contains multiple entities, dates, locations, or actions, split them into separate facts whenever possible.
-10. Do not summarize or merge facts.
-11. Do not infer facts that are not explicitly stated.
-12. Preserve the original meaning and wording as closely as possible.
-13. Return only a valid JSON array of strings.
+1. Split the input into the smallest independent factual statements possible — one fact, one entity/date/location/action per statement.
+2. Do NOT verify whether facts are true or false, and do NOT add, remove, or infer information not explicitly stated.
+3. Resolve pronouns and implicit references to their full entity name in every fact, even if the original sentence used a pronoun (each fact must stand alone without needing the others for context).
+4. Preserve the original wording and meaning as closely as possible, aside from the pronoun resolution in rule 3.
+5. Do not summarize, merge, or duplicate facts.
+6. If the sentence contains only one fact, return an array with a single element. If no fact is detected, return an empty array.
+7. Return ONLY a valid, parseable JSON array of strings — no markdown, no explanations, no text outside the array. Escape special characters as required by the JSON spec.
 
-Example:
-Input:
-"Elon Musk founded SpaceX in 2002."
+Example 1 (date split):
+Input: "Elon Musk founded SpaceX in 2002."
+Output: ["Elon Musk founded SpaceX.", "SpaceX was founded in 2002."]
 
-Output:
-[
-  "Elon Musk founded SpaceX.",
-  "SpaceX was founded in 2002."
-]
+Example 2 (pronoun resolution):
+Input: "Sundar Pichai leads Google. He was born in India."
+Output: ["Sundar Pichai leads Google.", "Sundar Pichai was born in India."]
 `;
-    const factAgent = createAgent({
-        model: model,
-        systemPrompt: FactGeneratorPrompt
-    })
-    
-    const facts = await factAgent.invoke({
-        messages: [{ role: "user", content: input }],
-    });
-    return facts.messages[facts.messages.length - 1].content;
+const factAgent = createAgent({
+    model: model,
+    systemPrompt: FactGeneratorPrompt
+})
+
+const facts = await factAgent.invoke({
+    messages: [{ role: "user", content: input }],
+});
+return facts.messages[facts.messages.length - 1].content;
 }

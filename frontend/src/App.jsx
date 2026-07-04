@@ -1,140 +1,64 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
 import './App.css'
+import Header from './components/Header';
+import SentenceInput from "./components/SentenceInput";
+import FlowResults from "./components/Flowresults"
+import EmptyState from "./components/EmptyState";
+import LoadingState from "./components/LoadingState";
+import ErrorBanner from "./components/ErrorBanner";
+import { verifySentence } from "./services/factCheckApi";
 
 
 function App() {
-  const [count, setCount] = useState(0);
-  
-const [response,setResponse]=useState([
-  {
-    "claim": "OpenAI released ChatGPT in November 2022.",
-    "verdict": "INSUFFICIENT_EVIDENCE",
-    "reason": "Could not find a reliable source confirming the release date of ChatGPT."
-  },
-  {
-    "claim": "ChatGPT reached one million users within five days.",
-    "verdict": "INSUFFICIENT_EVIDENCE",
-    "reason": "No trustworthy sources were found to confirm this claim."
-  },
-  {
-    "claim": "OpenAI introduced GPT-4 in 2023.",
-    "verdict": "SUPPORTED",
-    "reason": "Multiple reliable sources indicate that OpenAI released GPT-4 in 2022, not 2023."
+  const [sentence, setSentence] = useState("");
+  const [results, setResults] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+ 
+  async function handleCheck() {
+    setIsLoading(true);
+    setError("");
+    try {
+      const data = await verifySentence(sentence);
+      setResults(data);
+    } catch (err) {
+      setError(err.message || "Something went wrong while checking that sentence.");
+    } finally {
+      setIsLoading(false);
+    }
   }
-]);
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="min-h-screen bg-[#0B1120] bg-[radial-gradient(ellipse_at_top,_rgba(148,163,184,0.06),_transparent_60%)]">
+      <Header />
 
-      <div className="ticks"></div>
+      <main className="mx-auto max-w-3xl px-4 sm:px-6 pb-16 sm:pb-24">
+        <SentenceInput
+          value={sentence}
+          onChange={setSentence}
+          onSubmit={handleCheck}
+          isLoading={isLoading}
+        />
+        <div className="mt-6 sm:mt-8 space-y-6 sm:space-y-8">
+          <ErrorBanner message={error} onDismiss={() => setError("")} />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+          {isLoading && <LoadingState />}
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+          {!isLoading && results && results.length > 0 && (
+            <FlowResults results={results} />
+          )}
+
+          {!isLoading && results && results.length === 0 && (
+            <p className="text-slate-500 text-sm font-mono text-center py-8">
+              No claims were detected in that sentence.
+            </p>
+          )}
+
+          {!isLoading && !results && !error && <EmptyState />}
+        </div>
+      </main>
+
+    </div>
   )
 }
 

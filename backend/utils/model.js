@@ -7,8 +7,8 @@ import {initChatModel} from "langchain"
 // gemini-2.5-flash-lite
 
 
-export const model = await initChatModel("gemini-2.5-flash-lite", {
-    modelProvider: "google-genai",
+export const model = await initChatModel("llama3.2:3b", {
+    modelProvider: "ollama",
     temperature: 0.5,
     timeout: 600_000,
     maxTokens: 25000,
