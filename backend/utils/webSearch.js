@@ -10,11 +10,13 @@ export const webSearch = async (input) => {
             searchDepth: "advanced",
             includeAnswer: true
         })
+        const update = result.results.slice(0, 2);
+        console.log(result.answer);
+        // return ({"websearch":update,"brief answer":result.answer });
+        return result.answer;
     } catch (err) {
         console.log("Search error:", err.message);
         return { error: err.message };
     }
-    const update = result.results.slice(0, 2);
-    return update;
     // return result.answer;
 }

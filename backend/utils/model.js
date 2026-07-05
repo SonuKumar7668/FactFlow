@@ -29,9 +29,9 @@ export const model = await initChatModel("meta/llama-3.2-3b-instruct", {
 export const agent = new ChatOpenAI({
   apiKey: process.env.NVIDIA_API_KEY,
   model: "meta/llama-3.1-70b-instruct",
-  temperature: 0.2,
+  temperature: 0,
   topP: 0.7,
-  maxTokens: 1024,
+  maxTokens: 512,
   configuration: {
     baseURL: "https://integrate.api.nvidia.com/v1",
     fetch: async (url, init) => {
