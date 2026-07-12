@@ -30,9 +30,11 @@ export const model = await initChatModel("meta/llama-3.2-3b-instruct", {
 
 export const agent = new ChatGroq({
   apiKey: process.env.GROQ_API_KEY, // optional if env var is set
-  model: "openai/gpt-oss-120b",
+  model: "llama-3.3-70b-versatile",
   temperature: 0,
 });
+
+
 
 // export const agent = new ChatOpenAI({
 //   apiKey: process.env.NVIDIA_API_KEY,

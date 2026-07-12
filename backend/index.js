@@ -19,9 +19,7 @@ app.get("/", wrapAsync(async (req, res) => {
 app.post("/v1/verifyfact", wrapAsync(async (req, res) => {
     const sentence = req.body.sentence;
     const facts = await factGenerator(sentence);
-    console.log("Facts:",facts);
     const output = await factVerify(facts);
-    console.log("Output:",output);
     res.send(output);
 }))
 app.post("/v2/verifyfact", wrapAsync(async (req, res) => {
