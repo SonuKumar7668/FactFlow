@@ -3,7 +3,6 @@ dotenv.config();
 import { tavily } from '@tavily/core';
 
 export const webSearch = async (input) => {
-    console.log("input:", input);
     const client = tavily({ apiKey: process.env.TAVILY_API });
     try {
         const result = await client.search(input, {
@@ -11,7 +10,6 @@ export const webSearch = async (input) => {
             includeAnswer: true
         })
         const update = result.results.slice(0, 2);
-        console.log(result.answer);
         // return ({"websearch":update,"brief answer":result.answer });
         return result.answer;
     } catch (err) {

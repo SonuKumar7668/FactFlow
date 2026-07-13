@@ -6,6 +6,7 @@ import { factVerify } from "./utils/factVerify.js";
 import { wrapAsync } from "./utils/wrapAsync.js";
 import cors from "cors";
 import morgan from "morgan";
+import {startTelegram} from "./telegram/bot.js"
 
 const app = express();
 app.use(bodyParser.json());
@@ -61,7 +62,8 @@ app.use((req, res) => {
     res.status(404).json({ "error": "Page not found" });
 })
 
-app.listen(4000, () => {
+app.listen(4000, async() => {
     console.log("App is listening at 4000");
+    await startTelegram();
 })
 // export default app;
